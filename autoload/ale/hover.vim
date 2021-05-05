@@ -38,6 +38,7 @@ function! ale#hover#HandleTSServerResponse(conn_id, response) abort
                     call ale#preview#Show(split(l:documentation, "\n"), {
                     \   'filetype': 'ale-preview.message',
                     \   'stay_here': 1,
+                    \   'open_in': get(l:options, 'open_in', 'current-buffer')
                     \})
                 endif
             elseif get(l:options, 'hover_from_balloonexpr', 0)
@@ -54,9 +55,10 @@ function! ale#hover#HandleTSServerResponse(conn_id, response) abort
                 call ale#preview#Show(split(a:response.body.displayString, "\n"), {
                 \   'filetype': 'ale-preview.message',
                 \   'stay_here': 1,
+                \   'open_in': get(l:options, 'open_in', 'current-buffer')
                 \})
             else
-                call ale#util#ShowMessage(a:response.body.displayString)
+                call ale#util#ShowMessage(a:response.body.displayString, l:options)
             endif
         endif
     endif
@@ -240,10 +242,12 @@ function! ale#hover#HandleLSPResponse(conn_id, response) abort
                 \   'filetype': 'ale-preview.message',
                 \   'stay_here': 1,
                 \   'commands': l:commands,
+                \   'open_in': get(l:options, 'open_in', 'current-buffer')
                 \})
             else
                 call ale#util#ShowMessage(join(l:lines, "\n"), {
                 \   'commands': l:commands,
+                \   'open_in': get(l:options, 'open_in', 'current-buffer')
                 \})
             endif
         endif
@@ -294,6 +298,7 @@ function! s:OnReady(line, column, opt, linter, lsp_details) abort
     \   'hover_from_balloonexpr': get(a:opt, 'called_from_balloonexpr', 0),
     \   'show_documentation': get(a:opt, 'show_documentation', 0),
     \   'truncated_echo': get(a:opt, 'truncated_echo', 0),
+    \   'open_in': get(a:opt, 'open_in', 'current-buffer'),
     \}
 endfunction
 
@@ -322,11 +327,24 @@ endfunction
 let s:last_pos = [0, 0, 0]
 
 " This function implements the :ALEHover command.
-function! ale#hover#ShowAtCursor() abort
+function! ale#hover#ShowAtCursor(...) abort
     let l:buffer = bufnr('')
     let l:pos = getpos('.')
+    let l:options = {}
 
-    call ale#hover#Show(l:buffer, l:pos[1], l:pos[2], {})
+    if len(a:000) > 0
+        for l:option in a:000
+            if l:option is? '-tab'
+                let l:options.open_in = 'tab'
+            elseif l:option is? '-split'
+                let l:options.open_in = 'split'
+            elseif l:option is? '-vsplit'
+                let l:options.open_in = 'vsplit'
+            endif
+        endfor
+    endif
+
+    call ale#hover#Show(l:buffer, l:pos[1], l:pos[2], l:options)
 endfunction
 
 function! ale#hover#ShowTruncatedMessageAtCursor() abort
@@ -349,10 +367,22 @@ function! ale#hover#ShowTruncatedMessageAtCursor() abort
 endfunction
 
 " This function implements the :ALEDocumentation command.
-function! ale#hover#ShowDocumentationAtCursor() abort
+function! ale#hover#ShowDocumentationAtCursor(...) abort
     let l:buffer = bufnr('')
     let l:pos = getpos('.')
     let l:options = {'show_documentation': 1}
+
+    if len(a:000) > 0
+        for l:option in a:000
+            if l:option is? '-tab'
+                let l:options.open_in = 'tab'
+            elseif l:option is? '-split'
+                let l:options.open_in = 'split'
+            elseif l:option is? '-vsplit'
+                let l:options.open_in = 'vsplit'
+            endif
+        endfor
+    endif
 
     call ale#hover#Show(l:buffer, l:pos[1], l:pos[2], l:options)
 endfunction

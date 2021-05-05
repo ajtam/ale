@@ -247,10 +247,10 @@ command! -bar ALERepeatSelection :call ale#preview#RepeatSelection()
 command! -bar -nargs=* ALEFindReferences :call ale#references#Find(<f-args>)
 
 " Show summary information for the cursor.
-command! -bar ALEHover :call ale#hover#ShowAtCursor()
+command! -bar -nargs=* ALEHover :call ale#hover#ShowAtCursor(<f-args>)
 
 " Show documentation for the cursor.
-command! -bar ALEDocumentation :call ale#hover#ShowDocumentationAtCursor()
+command! -bar -nargs=* ALEDocumentation :call ale#hover#ShowDocumentationAtCursor(<f-args>)
 
 " Search for appearances of a symbol, such as a type name or function name.
 command! -nargs=1 ALESymbolSearch :call ale#symbol#Search(<q-args>)
@@ -306,7 +306,13 @@ nnoremap <silent> <Plug>(ale_go_to_type_definition_in_split) :ALEGoToTypeDefinit
 nnoremap <silent> <Plug>(ale_go_to_type_definition_in_vsplit) :ALEGoToTypeDefinitionIn -vsplit<Return>
 nnoremap <silent> <Plug>(ale_find_references) :ALEFindReferences<Return>
 nnoremap <silent> <Plug>(ale_hover) :ALEHover<Return>
+nnoremap <silent> <Plug>(ale_hover_in_tab) :ALEHover -tab<Return>
+nnoremap <silent> <Plug>(ale_hover_in_split) :ALEHover -split<Return>
+nnoremap <silent> <Plug>(ale_hover_in_vsplit) :ALEHover -vsplit<Return>
 nnoremap <silent> <Plug>(ale_documentation) :ALEDocumentation<Return>
+nnoremap <silent> <Plug>(ale_documentation_in_tab) :ALEDocumentation -tab<Return>
+nnoremap <silent> <Plug>(ale_documentation_in_split) :ALEDocumentation -split<Return>
+nnoremap <silent> <Plug>(ale_documentation_in_vsplit) :ALEDocumentation -vsplit<Return>
 inoremap <silent> <Plug>(ale_complete) <C-\><C-O>:ALEComplete<Return>
 nnoremap <silent> <Plug>(ale_import) :ALEImport<Return>
 nnoremap <silent> <Plug>(ale_rename) :ALERename<Return>

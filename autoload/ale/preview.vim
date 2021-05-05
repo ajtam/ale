@@ -25,7 +25,18 @@ endfunction
 function! ale#preview#Show(lines, ...) abort
     let l:options = get(a:000, 0, {})
 
-    silent pedit ALEPreviewWindow
+    let l:open_in = get(l:options, 'open_in', '')
+
+    if l:open_in is# 'tab'
+        silent tabnew pedit ALEPreviewWindow
+    elseif l:open_in is# 'split'
+        silent pedit ALEPreviewWindow
+    elseif l:open_in is# 'vsplit'
+        silent vert pedit ALEPreviewWindow
+    else
+        silent pedit ALEPreviewWindow
+    endif
+
     wincmd P
 
     setlocal modifiable
